@@ -11,4 +11,11 @@ output:
 
 ## Project thoughts
 
-I am interested in exploring data related to veteran graduation rates vs traditional student graduation rates
+In my research, I will seek to discover if hate crimes in New York City are more frequent during certain times of the year. I hypothesize that during the months of January - March hate crimes will be experienced at a higher rate than any other time of the year. This is in part due to the fact it will be after the holidays, the weather will be unpleasant, and the amount of daylight hours will be at its lowest point. Heightened emotions, social tensions, and public events associated with holidays, cultural celebrations, weather, amount of daylight, or specific historical anniversaries are all factors that may influence the rate of hate crimes. I will be using a data set provided by the NYPD on hate crimes. The explanatory variable of interest is the time of year, measured in months, with 12 levels corresponding to each month. The outcome variable will be the frequency of hate crimes, measured as the count of reported hate crimes in a given month or season. We will observe data over several years. The observed pattern would be confirmed if there is a clear statistically significant and consistent increase in the number of hate crimes during specific months or seasons. Conversely, if there is no consistent and clear obvious increase in hate crimes during specific seasons then we can infer that the time of year has no impact on the amount of hate crimes committed. 
+
+```{r}
+hatecrimes <- read.csv("NYPD_Hate_Crimes.csv")
+hatecrimes
+ 
+```
+
