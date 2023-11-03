@@ -15,7 +15,6 @@ In my research, I will seek to discover if hate crimes in New York City are more
 
 ```{r}
 hatecrimes <- read.csv("NYPD_Hate_Crimes.csv")
-hatecrimes
 
 ```
 ## libraries
@@ -27,28 +26,30 @@ library(tidyverse)
 ```
 
 
-## data visualization 
-
+## data visualization hatecimes 
 
 ```{r}
-hatecrimes <- hatecrimes |>
-    mutate(Arrest.Date = as.Date(Arrest.Date)) |>
-    group_by(Arrest.Date) |>
-    summarize(total_arrests = n(), na.rm = TRUE) |>
-    mutate(AbbrevMonth = abbreviated_months[month(Arrest.Date)])
+totalcrimes <- hatecrimes |>
+  group_by(Month.Number) |>
+  summarize(Total_Arrests_Per_Month = sum(n())) 
 
-filtered_hatecrimes <- hatecrimes |>
-filter(AbbrevMonth %in% c("Jan", "Feb","Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))
+month_order <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+totalcrimes$Month.Number <- factor(totalcrimes$Month.Number, levels = 1:12, labels = month_order)
 
-filtered_hatecrimes |>
-  ggplot(aes(x = factor(AbbrevMonth, levels = abbreviated_months),
-             y = total_arrests)) +
-  geom_bar(stat = "identity", fill = "indianred1") +
-  labs(title = "Arrests in NYC by Month",
+totalcrimesplot <- totalcrimes |>
+  ggplot(aes(x = Month.Number, y = Total_Arrests_Per_Month)) +
+           geom_bar(stat = "identity", fill = "indianred1", alpha = 0.5) +
+  labs(title = "Total Crimes By Month",
        x = "Months",
-       y = "Number of Arrests")
-
+       y = "Number of Crimes")
+  
+totalcrimesplot
 ```
+
+
+
+
 
 
 
