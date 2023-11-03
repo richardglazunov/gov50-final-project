@@ -16,6 +16,41 @@ In my research, I will seek to discover if hate crimes in New York City are more
 ```{r}
 hatecrimes <- read.csv("NYPD_Hate_Crimes.csv")
 hatecrimes
- 
+
 ```
+## libraries
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+```
+
+
+## data visualization 
+
+
+```{r}
+hatecrimes <- hatecrimes |>
+    mutate(Arrest.Date = as.Date(Arrest.Date)) |>
+    group_by(Arrest.Date) |>
+    summarize(total_arrests = n(), na.rm = TRUE) |>
+    mutate(AbbrevMonth = abbreviated_months[month(Arrest.Date)])
+
+filtered_hatecrimes <- hatecrimes |>
+filter(AbbrevMonth %in% c("Jan", "Feb","Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))
+
+filtered_hatecrimes |>
+  ggplot(aes(x = factor(AbbrevMonth, levels = abbreviated_months),
+             y = total_arrests)) +
+  geom_bar(stat = "identity", fill = "indianred1") +
+  labs(title = "Arrests in NYC by Month",
+       x = "Months",
+       y = "Number of Arrests")
+
+```
+
+
+
+
 
