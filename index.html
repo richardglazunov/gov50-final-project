@@ -1524,7 +1524,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>hatecrimes</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span><span class='op'>(</span><span class='st'>"NYPD_Hate_Crimes.csv"</span><span class='op'>)</span></span></code></pre>
 </div>
 </div>
-<h2 id="libraries">libraries</h2>
+<h2 id="libraries">Libraries</h2>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://ggplot2.tidyverse.org'>ggplot2</a></span><span class='op'>)</span></span>
@@ -1532,7 +1532,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='op'>)</span></span></code></pre>
 </div>
 </div>
-<h2 id="data-visualization-hatecimes">data visualization hatecimes</h2>
+<h2 id="barplot-for-hate-crimes-for-the-whole-data-set.">Barplot for Hate Crimes for the whole data set.</h2>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>totalcrimes</span> <span class='op'>&lt;-</span> <span class='va'>hatecrimes</span> <span class='op'>|&gt;</span></span>
@@ -1554,6 +1554,134 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <p><img src="index_files/figure-html5/unnamed-chunk-3-1.png" width="624" /></p>
 </div>
+<h3 id="top-3-months-for-hate-crimes-and-bottom-3-months-for-hate-crimes.">Top 3 Months for Hate Crimes and Bottom 3 Months for Hate Crimes.</h3>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>month_names</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"January"</span>, <span class='st'>"February"</span>, <span class='st'>"March"</span>, <span class='st'>"April"</span>, <span class='st'>"May"</span>, <span class='st'>"June"</span>,</span>
+<span>                 <span class='st'>"July"</span>, <span class='st'>"August"</span>, <span class='st'>"September"</span>, <span class='st'>"October"</span>, <span class='st'>"November"</span>, <span class='st'>"December"</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>summary_table</span> <span class='op'>&lt;-</span> <span class='va'>hatecrimes</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>Month.Number</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span>Average_Crimes <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/arrange.html'>arrange</a></span><span class='op'>(</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/desc.html'>desc</a></span><span class='op'>(</span><span class='va'>Average_Crimes</span><span class='op'>)</span><span class='op'>)</span> </span>
+<span></span>
+<span></span>
+<span><span class='va'>top_3_highest</span> <span class='op'>&lt;-</span> <span class='va'>summary_table</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/top_n.html'>top_n</a></span><span class='op'>(</span><span class='fl'>3</span>, wt <span class='op'>=</span> <span class='va'>Average_Crimes</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>bottom_3_lowest</span> <span class='op'>&lt;-</span> <span class='va'>summary_table</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/top_n.html'>top_n</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>3</span>, wt <span class='op'>=</span> <span class='va'>Average_Crimes</span><span class='op'>)</span></span>
+<span></span>
+<span></span>
+<span><span class='va'>final_table</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind_rows.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>top_3_highest</span>, <span class='va'>bottom_3_lowest</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>Month<span class='op'>=</span> <span class='va'>month_names</span><span class='op'>[</span><span class='va'>Month.Number</span><span class='op'>]</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>Month</span>, <span class='fu'><a href='https://tidyselect.r-lib.org/reference/everything.html'>everything</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='op'>-</span><span class='va'>Month.Number</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'>knitr</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/knitr/man/kable.html'>kable</a></span><span class='op'>(</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>final_table</span></span></code></pre>
+</div>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Month</th>
+<th style="text-align: right;">Average_Crimes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">March</td>
+<td style="text-align: right;">262</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">May</td>
+<td style="text-align: right;">252</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">June</td>
+<td style="text-align: right;">227</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">October</td>
+<td style="text-align: right;">153</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">November</td>
+<td style="text-align: right;">140</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">December</td>
+<td style="text-align: right;">133</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="highest-crime-month-for-2019-2020-2021">Highest Crime Month for 2019, 2020, 2021</h3>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>TOPCRIMES</span> <span class='op'>&lt;-</span> <span class='va'>hatecrimes</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>Year <span class='op'>=</span> <span class='va'>Complaint.Year.Number</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>top_month_2019</span> <span class='op'>&lt;-</span> <span class='va'>TOPCRIMES</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>Year</span> <span class='op'>==</span> <span class='fl'>2019</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>Year</span>, <span class='va'>Month.Number</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span>Total_Crimes <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/arrange.html'>arrange</a></span><span class='op'>(</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/desc.html'>desc</a></span><span class='op'>(</span><span class='va'>Total_Crimes</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/slice.html'>slice</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>top_month_2020</span> <span class='op'>&lt;-</span> <span class='va'>TOPCRIMES</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>Year</span> <span class='op'>==</span> <span class='fl'>2020</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>Year</span>, <span class='va'>Month.Number</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span>Total_Crimes <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/arrange.html'>arrange</a></span><span class='op'>(</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/desc.html'>desc</a></span><span class='op'>(</span><span class='va'>Total_Crimes</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/slice.html'>slice</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>top_month_2021</span> <span class='op'>&lt;-</span> <span class='va'>TOPCRIMES</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>Year</span> <span class='op'>==</span> <span class='fl'>2021</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>Year</span>, <span class='va'>Month.Number</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span>Total_Crimes <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/arrange.html'>arrange</a></span><span class='op'>(</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/desc.html'>desc</a></span><span class='op'>(</span><span class='va'>Total_Crimes</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/slice.html'>slice</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>resultbox</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind_rows.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>top_month_2019</span>, <span class='va'>top_month_2020</span>, <span class='va'>top_month_2021</span><span class='op'>)</span></span>
+<span><span class='va'>resultbox</span><span class='op'>$</span><span class='va'>Month</span> <span class='op'>&lt;-</span> <span class='va'>month.name</span><span class='op'>[</span><span class='va'>resultbox</span><span class='op'>$</span><span class='va'>Month.Number</span><span class='op'>]</span></span>
+<span></span>
+<span><span class='va'>resultbox</span> <span class='op'>&lt;-</span> <span class='va'>resultbox</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='op'>-</span><span class='va'>Month.Number</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>Year</span>, <span class='va'>Month</span>, <span class='va'>Total_Crimes</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'>knitr</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/knitr/man/kable.html'>kable</a></span><span class='op'>(</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>resultbox</span></span></code></pre>
+</div>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Year</th>
+<th style="text-align: left;">Month</th>
+<th style="text-align: right;">Total_Crimes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">2019</td>
+<td style="text-align: left;">March</td>
+<td style="text-align: right;">53</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2020</td>
+<td style="text-align: left;">March</td>
+<td style="text-align: right;">34</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2021</td>
+<td style="text-align: left;">May</td>
+<td style="text-align: right;">95</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="current-analysis-of-data.">Current Analysis of Data.</h2>
+<p>After examining the dataset, a correlation between hate crimes and warmer months becomes apparent. The months registering the highest number of hate crimes were March, June, and May. This trend suggests that as temperatures rise and daylight extends, more individuals spend time outdoors, potentially leading to an increased risk of hate crimes. Conversely, the months with the lowest count of hate crimes were October, November, and December. This decline aligns with the decrease in temperatures and shorter daylight hours, resulting in fewer outdoor interactions among people and consequently a decrease in reported hate crimes. With the current data presented and it being rather consistent over the years I would argue that the main idea of my hypothesis is wrong. The colder months (especially the ones with the least amount of sunlight) contribute to a decrease in crime while warmer months and ample sunlight provide people the opportunity to interact with each other more frequently and subsequently get into more altercations.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->

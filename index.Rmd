@@ -15,9 +15,8 @@ In my research, I will seek to discover if hate crimes in New York City are more
 
 ```{r}
 hatecrimes <- read.csv("NYPD_Hate_Crimes.csv")
-
 ```
-## libraries
+## Libraries
 
 ```{r}
 library(ggplot2)
@@ -26,7 +25,7 @@ library(tidyverse)
 ```
 
 
-## data visualization hatecimes 
+## Barplot for Hate Crimes for the whole data set.
 
 ```{r}
 totalcrimes <- hatecrimes |>
@@ -48,10 +47,73 @@ totalcrimesplot
 ```
 
 
+### Top 3 Months for Hate Crimes and Bottom 3 Months for Hate Crimes. 
+
+```{r}
+
+month_names <- c("January", "February", "March", "April", "May", "June",
+                 "July", "August", "September", "October", "November", "December")
+
+summary_table <- hatecrimes |>
+  group_by(Month.Number) |>
+  summarize(Average_Crimes = mean(n())) |>
+  arrange(desc(Average_Crimes)) 
 
 
+top_3_highest <- summary_table |>
+  top_n(3, wt = Average_Crimes)
+
+bottom_3_lowest <- summary_table |>
+  top_n(-3, wt = Average_Crimes)
 
 
+final_table <- bind_rows(top_3_highest, bottom_3_lowest) |>
+  mutate(Month= month_names[Month.Number]) |>
+  select(Month, everything()) |>
+  select(-Month.Number) |>
+  knitr::kable()
 
+final_table
+```
 
+### Highest Crime Month for 2019, 2020, 2021  
 
+```{r}
+TOPCRIMES <- hatecrimes |>
+  mutate(Year = Complaint.Year.Number)
+
+top_month_2019 <- TOPCRIMES |>
+  filter(Year == 2019) |>
+  group_by(Year, Month.Number) |>
+  summarize(Total_Crimes = n()) |>
+  arrange(desc(Total_Crimes)) |>
+  slice(1)
+
+top_month_2020 <- TOPCRIMES |>
+  filter(Year == 2020) |>
+  group_by(Year, Month.Number) |>
+  summarize(Total_Crimes = n()) |>
+  arrange(desc(Total_Crimes)) |>
+  slice(1)
+
+top_month_2021 <- TOPCRIMES |>
+  filter(Year == 2021) |>
+  group_by(Year, Month.Number) |>
+  summarize(Total_Crimes = n()) |>
+  arrange(desc(Total_Crimes)) |>
+  slice(1)
+
+resultbox <- bind_rows(top_month_2019, top_month_2020, top_month_2021)
+resultbox$Month <- month.name[resultbox$Month.Number]
+
+resultbox <- resultbox |>
+  select(-Month.Number) |>
+  select(Year, Month, Total_Crimes) |>
+  knitr::kable()
+
+resultbox
+```
+
+## Current Analysis of Data.
+
+After examining the dataset, a correlation between hate crimes and warmer months becomes apparent. The months registering the highest number of hate crimes were March, June, and May. This trend suggests that as temperatures rise and daylight extends, more individuals spend time outdoors, potentially leading to an increased risk of hate crimes. Conversely, the months with the lowest count of hate crimes were October, November, and December. This decline aligns with the decrease in temperatures and shorter daylight hours, resulting in fewer outdoor interactions among people and consequently a decrease in reported hate crimes. With the current data presented and it being rather consistent over the years I would argue that the main idea of my hypothesis is wrong. The colder months (especially the ones with the least amount of sunlight) contribute to a decrease in crime while warmer months and ample sunlight provide people the opportunity to interact with each other more frequently and subsequently get into more altercations. 
