@@ -15,6 +15,7 @@ In my research, I will seek to discover if hate crimes in New York City are more
 
 ```{r}
 hatecrimes <- read.csv("NYPD_Hate_Crimes.csv")
+hatecrimes
 ```
 ## Libraries
 
@@ -22,6 +23,8 @@ hatecrimes <- read.csv("NYPD_Hate_Crimes.csv")
 library(ggplot2)
 library(dplyr)
 library(tidyverse)
+library(infer)
+library(broom)
 ```
 
 
@@ -117,3 +120,99 @@ resultbox
 ## Current Analysis of Data.
 
 After examining the dataset, a correlation between hate crimes and warmer months becomes apparent. The months registering the highest number of hate crimes were March, June, and May. This trend suggests that as temperatures rise and daylight extends, more individuals spend time outdoors, potentially leading to an increased risk of hate crimes. Conversely, the months with the lowest count of hate crimes were October, November, and December. This decline aligns with the decrease in temperatures and shorter daylight hours, resulting in fewer outdoor interactions among people and consequently a decrease in reported hate crimes. With the current data presented and it being rather consistent over the years I would argue that the main idea of my hypothesis is wrong. The colder months (especially the ones with the least amount of sunlight) contribute to a decrease in crime while warmer months and ample sunlight provide people the opportunity to interact with each other more frequently and subsequently get into more altercations. Lastly if looking at the variation between the top months of 2019, 2020, and 2021 we can attribute the rapid decrease in 2020's hate crimes to the pandemic and attribute a drastic increase in hate crimes in 2021 as racial tensions grew and COVID began to decline. 
+
+## Regression + Further Analysis 
+
+```{r}
+regression <- lm(Total_Arrests_Per_Month ~ as.integer(Month.Number), data = totalcrimes)
+
+ggplot(totalcrimes, aes(x = Month.Number, y = Total_Arrests_Per_Month)) +
+  geom_point(color = "steelblue1", alpha = 0.5) +
+  geom_abline(slope = coef(regression)[[2]], intercept = coef(regression)[[1]], color = "indianred1") +
+  labs(
+    x = "Months",
+    y = "Number of Hate Crimes",
+    title = "Hate Crimes by Month with Regression Line")
+
+regression
+```
+
+## Regression Results 
+
+We are presented with two coefficients:
+Coefficients:
+(Intercept)  as.integer(Month.Number)  
+243.41                     -8.64  
+
+The Intercept represents the estimated value of Total_Arrests_Per_Month when Month.Number is zero. However, in the context of months (which range from 1 to 12), it doesn't have a direct interpretation since a month number can't be zero. This intercept might not hold much practical meaning in this context.
+
+When interpreting our month number coefficient we deduce that for each one-unit increase in Month.Number, there is an estimated decrease of approximately 8.64 in Total_Arrests_Per_Month, holding other variables constant. Unfortunately in the context of our research question this alone doesn't offer much insight but when coupled with external factors we can begin deducing what may be causal or correlated. 
+
+Interestingly when conducting outside research I found that the most violent days for homicides were as follows:
+
+1998-Mar-01     76
+1998-Jun-14     74
+1998-Oct-25     73
+1998-Nov-29     73
+1998-Dec-25     92
+1999-Jan-01     88
+1999-Dec-25     78
+2000-Jan-01     93
+2001-Jan-01     89
+2005-Jan-01     80
+
+Outside research also states that January-February has the lowest violent numbers and May-August has the highest. In my research I observed that the first 6 months of the year have significantly more hate crimes than the last half of the year with March topping the charts. Next I wanted to see how the research is affected when factoring in crimes that were Felonies vs crimes that were Misdemeanors. 
+
+```{r}
+crime_summary <- hatecrimes |>
+  group_by(Month.Number, Law.Code.Category.Description) |>
+  summarise(Count = n()) |>
+  filter(Law.Code.Category.Description %in% c("FELONY", "MISDEMEANOR"))
+
+month_order <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+crime_summary$Month.Number <- factor(crime_summary$Month.Number, levels = 1:12, labels = month_order)
+
+crime_plot <- ggplot(crime_summary, aes(x = Month.Number, y = Count, fill = Law.Code.Category.Description)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.7) +
+  scale_fill_manual(values = c("FELONY" = alpha("blue", 0.5), "MISDEMEANOR" = alpha("red", 0.5)), name = "Crime Type") +  # Change legend title here
+  labs(
+    x = "Months",
+    y = "Number of People Committing Crimes",
+    title = "Number of Felonies and Misdemeanors per Month"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_discrete(labels = month_order)
+
+crime_summary
+crime_plot
+```
+```{r}
+felony_data <- crime_summary |>
+  filter(Law.Code.Category.Description == "FELONY")
+
+misdemeanor_data <- crime_summary |>
+  filter(Law.Code.Category.Description == "MISDEMEANOR")
+
+regression_felony <- lm(Count ~ as.integer(Month.Number), data = felony_data)
+regression_misdemeanor <- lm(Count ~ as.integer(Month.Number), data = misdemeanor_data)
+
+summary(regression_felony)
+summary(regression_misdemeanor)
+combined_data <- rbind(felony_data, misdemeanor_data)
+
+ggplot(data = combined_data, aes(x = Month.Number, y = Count, color = Law.Code.Category.Description)) +
+  geom_point() +
+  geom_abline(intercept = coef(regression_combined)[1], slope = coef(regression_combined)[2], color = "green", linetype = "dashed") +
+  labs(
+    x = "Months",
+    y = "Number of Crimes",
+    title = "Felonies and Misdemeanors by Month"
+  ) +
+  theme_minimal()
+```
+
+
+
+
