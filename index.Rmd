@@ -196,6 +196,7 @@ misdemeanor_data <- crime_summary |>
 
 regression_felony <- lm(Count ~ as.integer(Month.Number), data = felony_data)
 regression_misdemeanor <- lm(Count ~ as.integer(Month.Number), data = misdemeanor_data)
+regression_combined <- lm(Count ~ as.integer(Month.Number), data = combined_data)
 
 summary(regression_felony)
 summary(regression_misdemeanor)
