@@ -16,6 +16,7 @@ In my research, I will seek to discover if hate crimes in New York City are more
 ```{r}
 hatecrimes <- read.csv("NYPD_Hate_Crimes.csv")
 ```
+
 ## Libraries
 
 ```{r}
@@ -27,7 +28,7 @@ library(broom)
 ```
 
 
-## Barplot for Hate Crimes for the whole data set.
+## Barplot for Hate Crimes for the Data Set
 
 ```{r}
 totalcrimes <- hatecrimes |>
@@ -198,8 +199,6 @@ regression_felony <- lm(Count ~ as.integer(Month.Number), data = felony_data)
 regression_misdemeanor <- lm(Count ~ as.integer(Month.Number), data = misdemeanor_data)
 regression_combined <- lm(Count ~ as.integer(Month.Number), data = combined_data)
 
-summary(regression_felony)
-summary(regression_misdemeanor)
 combined_data <- rbind(felony_data, misdemeanor_data)
 
 ggplot(data = combined_data, aes(x = Month.Number, y = Count, color = Law.Code.Category.Description)) +
@@ -208,9 +207,11 @@ ggplot(data = combined_data, aes(x = Month.Number, y = Count, color = Law.Code.C
   labs(
     x = "Months",
     y = "Number of Crimes",
-    title = "Felonies and Misdemeanors by Month"
-  ) +
+    title = "Felonies and Misdemeanors by Month") +
   theme_minimal()
+
+summary(regression_felony)
+summary(regression_misdemeanor)
 ```
 
 
