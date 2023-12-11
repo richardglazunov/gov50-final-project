@@ -9,17 +9,15 @@ output:
 
 
 
-## Project thoughts
+## Project Thoughts
 
 In my research, I will seek to discover if hate crimes in New York City are more frequent during certain times of the year. I hypothesize that during the months of January - March hate crimes will be experienced at a higher rate than any other time of the year. This is in part due to the fact it will be after the holidays, the weather will be unpleasant, and the amount of daylight hours will be at its lowest point. Heightened emotions, social tensions, and public events associated with holidays, cultural celebrations, weather, amount of daylight, or specific historical anniversaries are all factors that may influence the rate of hate crimes. I will be using a data set provided by the NYPD on hate crimes. The explanatory variable of interest is the time of year, measured in months, with 12 levels corresponding to each month. The outcome variable will be the frequency of hate crimes, measured as the count of reported hate crimes in a given month or season. We will observe data over several years. The observed pattern would be confirmed if there is a clear statistically significant and consistent increase in the number of hate crimes during specific months or seasons. Conversely, if there is no consistent and clear obvious increase in hate crimes during specific seasons then we can infer that the time of year has no impact on the amount of hate crimes committed. 
-
-```{r}
-hatecrimes <- read.csv("NYPD_Hate_Crimes.csv")
-```
 
 ## Libraries
 
 ```{r}
+hatecrimes <- read.csv("NYPD_Hate_Crimes.csv")
+
 library(ggplot2)
 library(dplyr)
 library(tidyverse)
@@ -28,7 +26,7 @@ library(broom)
 ```
 
 
-## Barplot for Hate Crimes for the Data Set
+## Barplot for Hate Crime for the Data Set
 
 ```{r}
 totalcrimes <- hatecrimes |>
@@ -50,7 +48,7 @@ totalcrimesplot
 ```
 
 
-### Top 3 Months for Hate Crimes and Bottom 3 Months for Hate Crimes. 
+### Months with the Most Crime and Months with the Least Crime 
 
 ```{r}
 
@@ -119,7 +117,7 @@ resultbox
 
 ## Current Analysis of Data.
 
-After examining the dataset, a correlation between hate crimes and warmer months becomes apparent. The months registering the highest number of hate crimes were March, June, and May. This trend suggests that as temperatures rise and daylight extends, more individuals spend time outdoors, potentially leading to an increased risk of hate crimes. Conversely, the months with the lowest count of hate crimes were October, November, and December. This decline aligns with the decrease in temperatures and shorter daylight hours, resulting in fewer outdoor interactions among people and consequently a decrease in reported hate crimes. With the current data presented and it being rather consistent over the years I would argue that the main idea of my hypothesis is wrong. The colder months (especially the ones with the least amount of sunlight) contribute to a decrease in crime while warmer months and ample sunlight provide people the opportunity to interact with each other more frequently and subsequently get into more altercations. Lastly if looking at the variation between the top months of 2019, 2020, and 2021 we can attribute the rapid decrease in 2020's hate crimes to the pandemic and attribute a drastic increase in hate crimes in 2021 as racial tensions grew and COVID began to decline. 
+After examining the dataset, a correlation between hate crimes and warmer months becomes apparent. The months registering the highest number of hate crimes were March, June, and May. This trend suggests that as temperatures rise and daylight extends, more individuals spend time outdoors, potentially leading to an increased risk of hate crimes. Conversely, the months with the lowest count of hate crimes were October, November, and December. This decline aligns with the decrease in temperatures and shorter daylight hours, resulting in fewer outdoor interactions among people and consequently a decrease in reported hate crimes. With the current data presented and it being rather consistent over the years I would argue that the main idea of my hypothesis is wrong. The colder months (especially the ones with the least amount of sunlight) contribute to a decrease in crime while warmer months and ample sunlight provide people the opportunity to interact with each other more frequently and subsequently get into more altercations. Lastly if looking at the variation between the top months of 2019, 2020, and 2021 we can possible atribute the rapid decrease in 2020's hate crimes to the pandemic and attribute a drastic increase in hate crimes in 2021 as racial tensions grew and COVID began to decline. 
 
 ## Regression + Further Analysis 
 
@@ -137,7 +135,7 @@ ggplot(totalcrimes, aes(x = Month.Number, y = Total_Arrests_Per_Month)) +
 regression
 ```
 
-## Regression Results 
+## First Regression Results 
 
 We are presented with two coefficients:
 Coefficients:
@@ -148,20 +146,7 @@ The Intercept represents the estimated value of Total_Arrests_Per_Month when Mon
 
 When interpreting our month number coefficient we deduce that for each one-unit increase in Month.Number, there is an estimated decrease of approximately 8.64 in Total_Arrests_Per_Month, holding other variables constant. Unfortunately in the context of our research question this alone doesn't offer much insight but when coupled with external factors we can begin deducing what may be causal or correlated. 
 
-Interestingly when conducting outside research I found that the most violent days for homicides were as follows:
-
-1998-Mar-01     76
-1998-Jun-14     74
-1998-Oct-25     73
-1998-Nov-29     73
-1998-Dec-25     92
-1999-Jan-01     88
-1999-Dec-25     78
-2000-Jan-01     93
-2001-Jan-01     89
-2005-Jan-01     80
-
-Outside research also states that January-February has the lowest violent numbers and May-August has the highest. In my research I observed that the first 6 months of the year have significantly more hate crimes than the last half of the year with March topping the charts. Next I wanted to see how the research is affected when factoring in crimes that were Felonies vs crimes that were Misdemeanors. 
+Outside research states that January-February has the lowest violent crime numbers and May-August has the highest. In my research I observed that the first 6 months of the year have significantly more hate crimes than the last half of the year with March topping the charts. Next I wanted to see how the research is affected when factoring in crimes that were Felonies vs crimes that were Misdemeanors. 
 
 ```{r}
 crime_summary <- hatecrimes |>
@@ -188,6 +173,8 @@ crime_plot <- ggplot(crime_summary, aes(x = Month.Number, y = Count, fill = Law.
 crime_summary
 crime_plot
 ```
+
+
 ```{r}
 felony_data <- crime_summary |>
   filter(Law.Code.Category.Description == "FELONY")
@@ -195,11 +182,11 @@ felony_data <- crime_summary |>
 misdemeanor_data <- crime_summary |>
   filter(Law.Code.Category.Description == "MISDEMEANOR")
 
+combined_data <- rbind(felony_data, misdemeanor_data)
+
 regression_felony <- lm(Count ~ as.integer(Month.Number), data = felony_data)
 regression_misdemeanor <- lm(Count ~ as.integer(Month.Number), data = misdemeanor_data)
 regression_combined <- lm(Count ~ as.integer(Month.Number), data = combined_data)
-
-combined_data <- rbind(felony_data, misdemeanor_data)
 
 ggplot(data = combined_data, aes(x = Month.Number, y = Count, color = Law.Code.Category.Description)) +
   geom_point() +
@@ -210,10 +197,29 @@ ggplot(data = combined_data, aes(x = Month.Number, y = Count, color = Law.Code.C
     title = "Felonies and Misdemeanors by Month") +
   theme_minimal()
 
-summary(regression_felony)
-summary(regression_misdemeanor)
+
+
+modelsummary::modelsummary(regression_felony,
+                           statistic = c("s.e. = {std.error}",
+                                         "p = {p.value}"),
+                           gof_map = c("nobs", "r.squared", "adj.r.squared"))
+
+modelsummary::modelsummary(regression_misdemeanor,
+                           statistic = c("s.e. = {std.error}",
+                                         "p = {p.value}"),
+                           gof_map = c("nobs", "r.squared", "adj.r.squared"))
 ```
+## Results
 
+Upon further analysis of additional data points, although taking note that during colder months the overall occurrence of crimes is lower, in December, the number of felonies is notably higher compared to misdemeanors. Interstingly, in January, the disparity between felonies and misdemeanors is almost negligible, unlike our observations in other months. Notably, March stands out as an unexpected outlier, displaying an unusually high occurrence of crimes and substantially more felonies. This may be because during March temperatures begin to rise and we gain an hour of sunlight with daylight savings time. 
 
+About 45.8% of variance is explained in this model.The coefficient of -4.633 indicates that for every one-unit increase in the 'Month.Number' variable, there is an estimated decrease of approximately 4.633 in the count of crimes (this is not consistent with every month). The intercept is insignificant because the month number will never be 0. The standard error associated with the month.number is 1.593. While this represents uncertainty around the coefficient estimate, the coefficient remains statistically significant despite this level of variability. 
 
+Although we can deduce with absolute certaintity that the colder months have significantly less crime, the warmer months are unclear. December, November, and October respectively all have the least amount of crime. March, May, and June all have the most, but months such as July and August fall in the middle. The model also does not show any clear difference in violent crimes (Felonies) committed over non-violent crimes (Misdemeanors) except that on average more misdemeanors are committed as opposed to felonies. Overall although the data found in this project is likely correlated it should not be interpreted casually without a significant amount of more subsantial evidence. 
+
+## Conclusion
+
+At the start of this project, my hypothesis suggested that colder weather, the holiday season, and reduced sunlight might lead to increased hate crimes due to mental health challenges and various other factors. However, upon examining the evidence, it appears that, on average, winter months exhibit considerably fewer crimes, while warmer months tend to experience higher crime rates. While there seems to be a correlation between the time of year and hate crime rates, there isn't enough substantial evidence to establish causation.Multiple factors need more thorough examination to fully understand the fluctuating crime rates. These factors consist of policing and law enforcement, education, employment, geographical location (including population density, age distribution, and existing crime rates), substance abuse issues, historical and cultural influences, community structure, and environmental aspects. Further analysis of these elements is crucial to identify the underlying reasons behind the variation in crime rates.
+
+Given more time and resources, I would dive deeper into determining the primary causes of hate crimes. This exploration would involve a more extensive analysis of which types of hate crimes are more prevalent and their underlying reasons. Additionally, I would investigate how different cities experience hate crimes, their frequency, and how these crimes manifest across different locations. Lastly, I would dive deeper into all previously mentioned factors to more comprehensively understand their roles in influencing hate crimes.
 

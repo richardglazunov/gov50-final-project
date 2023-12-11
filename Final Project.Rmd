@@ -193,11 +193,12 @@ felony_data <- crime_summary |>
 misdemeanor_data <- crime_summary |>
   filter(Law.Code.Category.Description == "MISDEMEANOR")
 
+combined_data <- rbind(felony_data, misdemeanor_data)
+
 regression_felony <- lm(Count ~ as.integer(Month.Number), data = felony_data)
 regression_misdemeanor <- lm(Count ~ as.integer(Month.Number), data = misdemeanor_data)
 regression_combined <- lm(Count ~ as.integer(Month.Number), data = combined_data)
 
-combined_data <- rbind(felony_data, misdemeanor_data)
 
 ggplot(data = combined_data, aes(x = Month.Number, y = Count, color = Law.Code.Category.Description)) +
   geom_point() +
