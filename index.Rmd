@@ -15,7 +15,6 @@ In my research, I will seek to discover if hate crimes in New York City are more
 
 ```{r}
 hatecrimes <- read.csv("NYPD_Hate_Crimes.csv")
-hatecrimes
 ```
 ## Libraries
 
